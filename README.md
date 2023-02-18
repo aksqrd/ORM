@@ -38,6 +38,7 @@ Before I begin it is important that you set up an example table in a SQL Server 
     INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','hillary','clinton')
 
 The Code Generation Tool works completely off your table(s) in your Database. This was a critical and important feature for me because by running the generation off the column names per table I was able to keep variable naming consistancy all the way through to the front-end of my application.
+
 1. Web.config
 
 Make sure in your web.config you add the following(it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000 Database and is application independent):
@@ -299,21 +300,21 @@ Here comes the fun part! Below I will show you examples of how to work with the 
 
 My first example will show how to call the business class's load() function which in turn will call our Dynamic Get stored procedure and retrieve whatever data we are looking for. I can pass a single or multiple values to the Dynamic stored procedure.
 
-    1. First I create a variable TestGet and point it at my Business Class
-    2. Next I'll use a With statement associated to TestGet
-    3. I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
-    4. I'll envoke the load function of our business class
-    5. Based on the criteria I've provided I'll call TestGet.ID and write out its value
-    6. Close my object 
+1. First I create a variable TestGet and point it at my Business Class
+2. Next I'll use a With statement associated to TestGet
+3. I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
+4. I'll envoke the load function of our business class
+5. Based on the criteria I've provided I'll call TestGet.ID and write out its value
+6. Close my object 
 
 I can also:
 
-    1. First I create a variable TestGet1 and point it at my Business Class
-    2. Next I'll use a With statement associated to TestGet1
-    3. I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
-    4. I'll envoke the load function of our business class
-    5. Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
-    6. Close my object 
+1. First I create a variable TestGet1 and point it at my Business Class
+2. Next I'll use a With statement associated to TestGet1
+3. I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
+4. I'll envoke the load function of our business class
+5. Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
+6. Close my object 
 
     Dim TestGet As New Classes.tbl_Name
     With TestGet
@@ -339,12 +340,12 @@ I can also:
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and insert a new record returning the inserted record ID.
 
-    1. First I create a variable TestSaveInsert and point it at my Business Class
-    2. Next I'll use a With statement associated to TestSaveInsert
-    3. I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-    4. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-    5. Based on the criteria I've provided I'll call GenericID and write out its value
-    6. Close my object 
+1. First I create a variable TestSaveInsert and point it at my Business Class
+2. Next I'll use a With statement associated to TestSaveInsert
+3. I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+4. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+5. Based on the criteria I've provided I'll call GenericID and write out its value
+6. Close my object 
 
     Dim TestSaveInsert As New Classes.tbl_Name
     With TestSaveInsert
@@ -361,13 +362,13 @@ My next example will show how to call the business class's save() function which
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and update an exsisting record.
 
-    1. First I create a variable TestSaveUpdate and point it at my Business Class
-    2. Next I'll use a With statement associated to TestSaveUpdate
-    3. In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
-    4. I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-    5. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-    6. Based on the criteria I've provided I'll call GenericID and write out its value
-    7. Close my object 
+1. First I create a variable TestSaveUpdate and point it at my Business Class
+2. Next I'll use a With statement associated to TestSaveUpdate
+3. In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
+4. I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+5. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+6. Based on the criteria I've provided I'll call GenericID and write out its value
+7. Close my object 
 
     Dim TestSaveUpdate As New Classes.tbl_Name
     With TestSaveInsert
@@ -379,17 +380,18 @@ My next example will show how to call the business class's save() function which
 
     TestSaveUpdate = Nothing
 
-## Points of Interest
+### Points of Interest
 
 - During this process I've noticed that almost 60% of my development time has been cut out because of using this tool! I hope this Code Generation Tool saves you time as well and gives you the opportunity to spend more time with your family.
-History
+
+### History
 
 - 12/28/2006 - Finally finished this monster! (Or until the development community tears it apart and I have to start from scratch...)
 
 ### About Adam Kiger
 
 I have been a full-cycle web developer/designer since 1996. I'm primarily working with companies interested in utilizing my Content Management Software(CMS) that I have spent the past 24 years developing which integrates a private labeling structure, B2C environments, multiple languages and a profound sense of SEO compliance. I have also built custom Blogging, Forums, web applications and custom webware for multiple clients.
-Adam D. Kiger
+
 
 	
 
