@@ -17,6 +17,7 @@ Files that I will be talking about in this article and also included in this pro
 - Web.config
 - Classes.vb
 - IU.vb
+- Count.vb
 - Funcs.vb
 - Default.aspx/Default.aspx.vb
 
@@ -58,9 +59,26 @@ This file is where I keep my generated business classes: This is where I will la
 
 ```vb.net
 Public Class tbl_Name
-    Public ID As String
-    Public FirstName As String
-    Public LastName As String
+
+    Public ID As String 
+    Public FirstName As String 
+    Public LastName As String 
+    Public JSONData As String 
+
+    Public Function xCount() As Integer
+        Dim output As Integer
+        Dim generic As New Count_Database.Count_tbl_Name
+        With generic
+            .ID = ID
+            .FirstName = FirstName
+            .LastName = LastName
+        End With
+
+        generic.ExecuteProc()
+        output = generic.RetVal
+        Return output
+        generic = Nothing
+    End Function
 
     Public Function save() As Integer
         Dim output As Integer
@@ -70,6 +88,7 @@ Public Class tbl_Name
             .FirstName = FirstName
             .LastName = LastName
         End With
+
         generic.ExecuteProc()
         output = generic.RetVal
         Return output
@@ -77,56 +96,83 @@ Public Class tbl_Name
     End Function
 
     Public Function load()
-        Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
-        Dim sqlCmd As New SqlClient.SqlCommand("[prc_Get_tbl_Name]", sqlConn)
+        Dim sqlConn As New SqlConnection(ConfigurationManager.AppSettings("AppConnectionString"))
+        Dim sqlCmd As New SqlClient.SqlCommand("[dbo].[prc_Get_tbl_Name]", sqlConn)
         With sqlCmd
             .CommandType = CommandType.StoredProcedure
-            .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.Int)).Value = ID
-            .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.VarChar, 50)).Value = FirstName
-            .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.VarChar, 50)).Value = LastName
+            .Parameters.Add(New SqlClient.SqlParameter("@ID",SqlDbType.int)).Value = ID
+            .Parameters.Add(New SqlClient.SqlParameter("@FirstName",SqlDbType.varchar, 50)).Value = FirstName
+            .Parameters.Add(New SqlClient.SqlParameter("@LastName",SqlDbType.varchar, 50)).Value = LastName
         End With
         Dim DataReader As SqlDataReader
         Try
             sqlCmd.Connection.Open()
             DataReader = sqlCmd.ExecuteReader()
+
             Do While DataReader.Read()
-                If Not IsDBNull(DataReader.Item("ID")) Then
-                    ID = DataReader.Item("ID")
+                If Not DataReader.Item("ID") Is Nothing Then
+                     If Not IsDBNull(DataReader.Item("ID")) Then
+                        ID = DataReader.Item("ID")
+                     End If
                 End If
-                If Not IsDBNull(DataReader.Item("FirstName")) Then
-                    FirstName = DataReader.Item("FirstName")
+                If Not DataReader.Item("FirstName") Is Nothing Then
+                     If Not IsDBNull(DataReader.Item("FirstName")) Then
+                        FirstName = DataReader.Item("FirstName")
+                     End If
                 End If
-                If Not IsDBNull(DataReader.Item("LastName")) Then
-                    LastName = DataReader.Item("LastName")
+                If Not DataReader.Item("LastName") Is Nothing Then
+                     If Not IsDBNull(DataReader.Item("LastName")) Then
+                        LastName = DataReader.Item("LastName")
+                     End If
                 End If
             Loop
         Catch ex As System.Exception
             Throw New System.Exception(ex.ToString())
         Finally
             If sqlConn.State = Data.ConnectionState.Open Then
-                sqlConn.Close()
+            sqlConn.Close()
             End If
         End Try
     End Function
 
-End Class
+
+End Class 
+
 ```
 
 I'm sure at some point someone is going to cut this stored procedure down to size, but I have yet to run into a resource problem, even with over 50,000 concurrent sessions.
 
 ```tsql
-CREATE PROCEDURE prc_Get_tbl_Name
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[prc_Get_tbl_Name]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[prc_Get_tbl_Name]
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+CREATE PROCEDURE  [dbo].[prc_Get_tbl_Name]
 @ID AS int = NULL, 
 @FirstName AS varchar(50) = NULL, 
 @LastName AS varchar(50) = NULL 
 AS
 Declare @WhereClause as varchar(8000)
-SELECT @WhereClause = 'SELECT * FROM tbl_Name WHERE 1 = 1 '
-if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @ID when isnull(@ID,'') then @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
-if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @FirstName when isnull(@FirstName,'') then @WhereClause + ' FirstName = ' + CONVERT(varchar,@FirstName) else @WhereClause end
-if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @LastName when isnull(@LastName,'') then @WhereClause + ' LastName = ' + CONVERT(varchar,@LastName) else @WhereClause  end
+SELECT  @WhereClause =  'SELECT * FROM [dbo].[tbl_Name] WHERE 1 = 1 '
+if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @ID when isnull(@ID,'') then  @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
+if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @FirstName when isnull(@FirstName,'') then  @WhereClause + ' FirstName LIKE ''%' + CONVERT(varchar(50),@FirstName) + '%''' else @WhereClause end
+if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @LastName when isnull(@LastName,'') then  @WhereClause + ' LastName LIKE ''%' + CONVERT(varchar(50),@LastName) + '%''' else @WhereClause end
 exec(@WhereClause)
 GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
 ```
 
 ## 3. IU
@@ -134,68 +180,159 @@ GO
 This file is where I keep my generated data access layer classes: When I call the save() function in the generated business class, this class is called. Here is an example of the generated data access layer class and the generated Insert/Update stored procedure it references:
 
 ```vb.net
-Public NotInheritable Class IU_tbl_Name
+Public NotInheritable Class IU_tbl_Name 
     Public RetVal As String
-    Public ID As String
-    Public FirstName As String
-    Public LastName As String
-    Public Function ExecuteProc()
-        Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
-        Dim sqlCmd As New SqlClient.SqlCommand("[prc_IU_tbl_Name]", sqlConn)
-        Dim output_value As SqlParameter
-        With sqlCmd
-            .CommandType = CommandType.StoredProcedure
-            output_value = .Parameters.Add(New SqlClient.SqlParameter("@RetVal", SqlDbType.Int))
-            output_value.Direction = ParameterDirection.Output
-            .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.int)).Value = ID
-            .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.varchar, 50)).Value = FirstName
-            .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.varchar, 50)).Value = LastName
-        End With
-        Try
-            sqlCmd.Connection.Open()
-            sqlCmd.ExecuteReader()
-        Catch ex As System.Exception
-            Throw New System.Exception(ex.ToString())
-        Finally
-            If IsDBNull(output_value.Value) Then
-                RetVal = ID
-            Else
-                RetVal = output_value.Value
-            End If
-            If sqlConn.State = Data.ConnectionState.Open Then
-                sqlConn.Close()
-            End If
-        End Try
-    End Function
+    Public ID As String 
+    Public FirstName As String 
+    Public LastName As String 
+    Public Function ExecuteProc() 
+	    Dim sqlConn As New SqlConnection(ConfigurationManager.AppSettings("AppConnectionString")) 
+	    Dim sqlCmd As New SqlClient.SqlCommand("[dbo].[prc_IU_tbl_Name]", sqlConn) 
+	    Dim output_value As SqlParameter 
+	    With sqlCmd 
+		    .CommandType = CommandType.StoredProcedure 
+		    output_value = .Parameters.Add(New SqlClient.SqlParameter("@RetVal", SqlDbType.Int)) 
+		    output_value.Direction = ParameterDirection.Output 
+            .Parameters.Add(New SqlClient.SqlParameter("@ID",SqlDbType.int)).Value = ID
+            .Parameters.Add(New SqlClient.SqlParameter("@FirstName",SqlDbType.varchar, 50)).Value = FirstName
+            .Parameters.Add(New SqlClient.SqlParameter("@LastName",SqlDbType.varchar, 50)).Value = LastName
+        End With 
+        Try 
+	        sqlCmd.Connection.Open() 
+	        sqlCmd.ExecuteReader() 
+        Catch ex As System.Exception 
+	        Throw New System.Exception(ex.ToString()) 
+        Finally 
+	        If IsDBNull(output_value.Value) Then 
+		        RetVal = ID 
+	        Else 
+		        RetVal = output_value.Value 
+	        End If 
+	        If sqlConn.State = Data.ConnectionState.Open Then 
+		        sqlConn.Close() 
+	        End If 
+        End Try 
+    End Function 
 End Class
+
+
 ```
 
 ```tsql
-    CREATE PROCEDURE prc_IU_tbl_Name
-        @ID AS int = NULL, 
-        @FirstName AS varchar(50) = NULL, 
-        @LastName AS varchar(50) = NULL, 
-        @RetVal int OUTPUT 
-    AS
-    SET NOCOUNT ON
-    IF EXISTS(SELECT * FROM tbl_Name WHERE ID = @ID) 
-    BEGIN 
-        UPDATE tbl_Name
-        Set FirstName = isNull(@FirstName, FirstName),LastName = isNull(@LastName, LastName)
-        WHERE ID = @ID 
-        Return (0)
-    End
-    ELSE 
-    BEGIN 
-        INSERT INTO tbl_Name
-        (FirstName, LastName)
-        VALUES (IsNull(@FirstName, ''), IsNull(@LastName, ''))
-        SET @RetVal = @@IDENTITY
-    End
-    GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[prc_IU_tbl_Name]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[prc_IU_tbl_Name]
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+CREATE PROCEDURE [dbo].[prc_IU_tbl_Name]
+@ID AS int = NULL, 
+@FirstName AS varchar(50) = NULL, 
+@LastName AS varchar(50) = NULL, 
+@RetVal int OUTPUT 
+AS
+SET NOCOUNT ON
+IF EXISTS(SELECT * FROM [dbo].[tbl_Name] WHERE ID = @ID) 
+ BEGIN 
+    UPDATE  [dbo].[tbl_Name]
+    Set FirstName = isNull(@FirstName, FirstName),LastName = isNull(@LastName, LastName)
+    WHERE ID = @ID 
+    Return (0)
+End
+ELSE 
+ BEGIN 
+    INSERT INTO  [dbo].[tbl_Name]
+    (FirstName, LastName)
+    VALUES (IsNull(@FirstName, NULL),IsNull(@LastName, NULL))
+    SET @RetVal = @@IDENTITY
+End
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
 ```
 
-## 4. Funcs
+## 4. Count
+
+This file is where I keep my generated counting class: When I call the save() function in the generated business class, this class is called. Here is an example of the generated data access layer class and the generated Insert/Update stored procedure it references:
+
+```vb.net
+Public NotInheritable Class Count_tbl_Name 
+
+    Public RetVal As String
+    Public ID As String 
+    Public FirstName As String 
+    Public LastName As String 
+
+    Public Function ExecuteProc() 
+	    Dim sqlConn As New SqlConnection(ConfigurationManager.AppSettings("AppConnectionString")) 
+	    Dim sqlCmd As New SqlClient.SqlCommand("[dbo].[prc_Count_tbl_Name]", sqlConn) 
+	    With sqlCmd 
+		    .CommandType = CommandType.StoredProcedure 
+            .Parameters.Add(New SqlClient.SqlParameter("@ID",SqlDbType.int)).Value = ID
+            .Parameters.Add(New SqlClient.SqlParameter("@FirstName",SqlDbType.varchar, 50)).Value = FirstName
+            .Parameters.Add(New SqlClient.SqlParameter("@LastName",SqlDbType.varchar, 50)).Value = LastName
+        End With 
+        Dim DataReader As SqlDataReader 
+        Try 
+	        sqlCmd.Connection.Open() 
+	        DataReader = sqlCmd.ExecuteReader() 
+            Do While DataReader.Read()
+                If Not IsDBNull(DataReader.Item("ReturnCount")) Then
+                    RetVal = DataReader.Item("ReturnCount")
+                Else
+                    RetVal = 0
+                End If
+            Loop
+        Catch ex As System.Exception 
+	        Throw New System.Exception(ex.ToString()) 
+        Finally 
+	        If sqlConn.State = Data.ConnectionState.Open Then 
+		        sqlConn.Close() 
+	        End If 
+        End Try 
+    End Function 
+End Class 
+```
+
+```tsql
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[prc_Count_tbl_Name]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[prc_Count_tbl_Name]
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+CREATE PROCEDURE  prc_Count_tbl_Name
+@ID AS int = NULL, 
+@FirstName AS varchar(50) = NULL, 
+@LastName AS varchar(50) = NULL 
+AS
+Declare @WhereClause as varchar(8000)
+SELECT  @WhereClause =  'SELECT Count(*) As ReturnCount FROM [dbo].[tbl_Name] WHERE 1 = 1 '
+if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @ID when isnull(@ID,'') then  @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
+if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @FirstName when isnull(@FirstName,'') then  @WhereClause + ' FirstName LIKE ''%' + CONVERT(varchar(50),@FirstName) + '%''' else @WhereClause end
+if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
+SELECT  @WhereClause = case @LastName when isnull(@LastName,'') then  @WhereClause + ' LastName LIKE ''%' + CONVERT(varchar(50),@LastName) + '%''' else @WhereClause end
+exec(@WhereClause)
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+```
+
+## 5. Funcs
 
 The function LoadFromAnyDDLB() below is referenced by the CodeGen application to create a dropdownlist of all the table names contained in the database you pointed the application at. I've used this function for many years to fill my dropdowns. 
 
@@ -261,7 +398,7 @@ Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList,
 End Function
 ```
 
-## 5. CodeGen
+## 6. CodeGen
 
 The UI for the Code Generation Tool contains the following:
 
@@ -313,7 +450,7 @@ The results literal on the page called ltl_CodeResults will be the placeholder t
 ltl_CodeResults.Text = MakeClassesAndIUs(TableName, ClassNameHere, StoredProcName, IU2Use, LoadStoredProcName, Switch)
 ```
 
-## 6. TestOutput
+## 7. TestOutput
 
 Here comes the fun part! Below I will show you examples of how to work with the code you have just generated. As you will see, there is little code one has to write to deal with CRUDing of data in a dynamic web based application or public site.
 
