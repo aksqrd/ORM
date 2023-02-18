@@ -288,7 +288,7 @@ In the code behind of CodeGen.aspx I have preset the following variable values t
 
 I added this value so I wouldn't have to fully build the connection string everytime I ran the application.
 
-```asp.net
+```vb.net
 txt_ConStr.Text = "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"
 ```
 
@@ -309,7 +309,7 @@ oFuncs = Nothing
 
 The results literal on the page called ltl_CodeResults will be the placeholder the main code generation function (MakeClassesAndIUs) will write to. Depending on what choices you make in the UI concerning what classes or stored procedures you want to generate the Switch variable is used to pass those choices to the main code generation function (MakeClassesAndIUs).
 
-```asp.net
+```vb.net
 ltl_CodeResults.Text = MakeClassesAndIUs(TableName, ClassNameHere, StoredProcName, IU2Use, LoadStoredProcName, Switch)
 ```
 
@@ -347,9 +347,10 @@ Response.Write("ID = " & TestGet.ID)
 TestGet = Nothing
 ```
 
-```vba
+```vb.net
 '-------------------- OR ----------------------'
 ```
+
 ```vb.net
 Dim TestGet1 As New Classes.tbl_Name
 With TestGet1
