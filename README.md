@@ -7,24 +7,23 @@ Introduction
 The Code Generation Tool will allow the user to point to any SQL Server 2000 Database and generate code on a per table basis or generate code on all the tables in that database. The code generated will consist of an Insert/Update stored procedure, a dynamic Get stored procedure, a Business Class with two functions(A save() function, allowing me to call the Insert/Update stored procedure the tool created and a load() function, allowing me to pass a single or multiple parameters to the Get stored procedure the tool created retrieving a recordset based on the criteria passed) and a Data Access Layer Class called by the save() function of the business class which in turn calls the Insert/Update stored procedure the tool created allowing me to insert if the record ID is not present or update based on the ID i have provided. If the information passed was intended for insertion, then the process will also return the new record ID.
 Using the code
 
-Files that I will be talking about in this article and also included in the CodeGeneration/CodeGeneration_src.zip are:
+Files that I will be talking about in this article and also included in this project are:
 
     Web.config
     Classes.vb
     IU.vb
     Funcs.vb
-    CodeGen.aspx/CodeGen.aspx.vb
-    TestOutput.aspx/TestOutput.aspx.vb 
+    Default.aspx/Default.aspx.vb
 
 Set Up
 
 Before I begin it is important that you set up an example table in a SQL Server 2000 Database. You can use the script below or the DBSetup.sql provided in the CodeGeneration/CodeGeneration_src.zip or CodeGeneration/CodeGeneration_demo.zip downloads.
 
     CREATE TABLE [dbo].[tbl_Name] (
-    [ID] [int] IDENTITY (1, 1) NOT NULL ,
-    [FirstName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-    [LastName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
-    ) ON [PRIMARY]
+        [ID] [int] IDENTITY (1, 1) NOT NULL ,
+        [FirstName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+        [LastName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+        ) ON [PRIMARY]
     GO
 
     SET IDENTITY_INSERT [dbo].[tbl_Name] ON
@@ -38,10 +37,7 @@ The Code Generation Tool works completely off your table(s) in your Database. Th
 
 Make sure in your web.config you add the following(it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000 Database and is application independent):
 
-    <appSettings
-        add key="AppConnectionString" 
-    value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]" >
-    </appSettings>
+    <appSettings  add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
 
 2. Classes
 
@@ -165,25 +161,25 @@ This file is where I keep my generated data access layer classes: When I call th
     End Class
 
     CREATE PROCEDURE prc_IU_tbl_Name
-    @ID AS int = NULL, 
-    @FirstName AS varchar(50) = NULL, 
-    @LastName AS varchar(50) = NULL, 
-    @RetVal int OUTPUT 
+        @ID AS int = NULL, 
+        @FirstName AS varchar(50) = NULL, 
+        @LastName AS varchar(50) = NULL, 
+        @RetVal int OUTPUT 
     AS
     SET NOCOUNT ON
     IF EXISTS(SELECT * FROM tbl_Name WHERE ID = @ID) 
     BEGIN 
-    UPDATE tbl_Name
-    Set FirstName = isNull(@FirstName, FirstName),LastName = isNull(@LastName, LastName)
-    WHERE ID = @ID 
-    Return (0)
+        UPDATE tbl_Name
+        Set FirstName = isNull(@FirstName, FirstName),LastName = isNull(@LastName, LastName)
+        WHERE ID = @ID 
+        Return (0)
     End
     ELSE 
     BEGIN 
-    INSERT INTO tbl_Name
-    (FirstName, LastName)
-    VALUES (IsNull(@FirstName, ''), IsNull(@LastName, ''))
-    SET @RetVal = @@IDENTITY
+        INSERT INTO tbl_Name
+        (FirstName, LastName)
+        VALUES (IsNull(@FirstName, ''), IsNull(@LastName, ''))
+        SET @RetVal = @@IDENTITY
     End
     GO
 
@@ -399,6 +395,7 @@ During this process I've noticed that almost 60% of my development time has been
 History
 
 12/28/2006 - Finally finished this monster! (Or until the development community tears it apart and I have to start from scratch...)
+
 About Adam Kiger
 
 I have been a full-cycle web developer/designer since 1996. I'm primarily working with companies interested in utilizing my Content Management Software(CMS) that I have spent the past 24 years developing which integrates a private labeling structure, B2C environments, multiple languages and a profound sense of SEO compliance. I have also built custom Blogging, Forums, web applications and custom webware for multiple clients.
