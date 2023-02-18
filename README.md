@@ -1,6 +1,6 @@
 # ORM
 
-##Introduction
+## Introduction
 
 20 years ago I began writing a tool to generate business classes, data access layer classes, insert/update/get stored procedures. I got so tired of writing the same code over and over again. As a developer I can personally tell you that this is a common complaint among developers. Through the years I stuck to what worked easily and quickly since as a developer I'm constantly surrounded by impossible deadlines and the need for the reuse of successfully tested functionality which is crucial. As time passed I realized a similarity in the business classes, data access layer classes, insert/update/get stored procedures I was writing. As soon as portions of code in these categories passed various and rigorous testing from my wonderful friends in Quality & Assurance, I took the code and began looking for a way to speed up my development process.
 
@@ -15,7 +15,7 @@ Files that I will be talking about in this article and also included in this pro
     Funcs.vb
     Default.aspx/Default.aspx.vb
 
-##Set Up
+## Set Up
 
 Before I begin it is important that you set up an example table in a SQL Server 2000 Database. You can use the script below or the DBSetup.sql provided in the CodeGeneration/CodeGeneration_src.zip or CodeGeneration/CodeGeneration_demo.zip downloads.
 
@@ -39,7 +39,7 @@ Make sure in your web.config you add the following(it's assumed that the databas
 
     <appSettings  add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
 
-##2. Classes
+## 2. Classes
 
 This file is where I keep my generated business classes: This is where I will later call in an example the save() and the load() functions. Here is an example of the generated class and the generated dynamic Get stored procedure the load() function calls on:
 
@@ -120,7 +120,7 @@ I'm sure at some point someone is going to cut this stored procedure down to siz
     exec(@WhereClause)
     GO
 
-##3. IU
+## 3. IU
 
 This file is where I keep my generated data access layer classes: When I call the save() function in the generated business class, this class is called. Here is an example of the generated data access layer class and the generated Insert/Update stored procedure it references:
 
@@ -184,7 +184,7 @@ This file is where I keep my generated data access layer classes: When I call th
     GO
 
 
-##4. Funcs
+## 4. Funcs
 
 The function LoadFromAnyDDLB() below is referenced by the CodeGen application to create a dropdownlist of all the table names contained in the database you pointed the application at. I've used this function for many years to fill my dropdownlists. (Thanks John Galloway & Peter Pociask!)
 
@@ -249,7 +249,7 @@ The function LoadFromAnyDDLB() below is referenced by the CodeGen application to
         sqlConn.Dispose()
     End Function
 
-##5. CodeGen
+## 5. CodeGen
 
 The UI for the Code Generation Tool contains the following:
 
@@ -303,7 +303,7 @@ The results literal on the page called ltl_CodeResults will be the placeholder t
     LoadStoredProcName, 
     Switch)
 
-##6. TestOutput
+## 6. TestOutput
 
 Here comes the fun part! Below I will show you examples of how to work with the code you have just generated. As you will see, there is little code one has to write to deal with CRUDing of data in a dynamic web based application or public site.
 
@@ -389,7 +389,7 @@ My next example will show how to call the business class's save() function which
 
     TestSaveUpdate = Nothing
 
-##Points of Interest
+## Points of Interest
 
 During this process I've noticed that almost 60% of my development time has been cut out because of using this tool! I hope this Code Generation Tool saves you time as well and gives you the opportunity to spend more time with your family.
 History
