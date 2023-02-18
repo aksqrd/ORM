@@ -14,11 +14,11 @@ The Code Generation Tool will allow the user to point to any SQL Server 2000 Dat
 
 Files that I will be talking about in this article and also included in this project are:
 
-    Web.config
-    Classes.vb
-    IU.vb
-    Funcs.vb
-    Default.aspx/Default.aspx.vb
+    - Web.config
+    - Classes.vb
+    - IU.vb
+    - Funcs.vb
+    - Default.aspx/Default.aspx.vb
 
 ## Set Up
 
@@ -42,7 +42,7 @@ The Code Generation Tool works completely off your table(s) in your Database. Th
 
 Make sure in your web.config you add the following(it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000 Database and is application independent):
 
-    <appSettings  add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
+    <appSettings add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
 
 ## 2. Classes
 
@@ -103,7 +103,7 @@ This file is where I keep my generated business classes: This is where I will la
 
     End Class
 
-I'm sure at some point someone is going to cut this stored procedure down to size, but I have yet to run into a resource problem, even with over 5,000 concurrent sessions.
+I'm sure at some point someone is going to cut this stored procedure down to size, but I have yet to run into a resource problem, even with over 50,000 concurrent sessions.
 
     CREATE PROCEDURE prc_Get_tbl_Name
     @ID AS int = NULL, 
@@ -112,16 +112,9 @@ I'm sure at some point someone is going to cut this stored procedure down to siz
     AS
     Declare @WhereClause as varchar(8000)
     SELECT @WhereClause = 'SELECT * FROM tbl_Name WHERE 1 = 1 '
-    if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND '
-    SELECT @WhereClause = case @ID when isnull(@ID,'') then @WhereClause + ' ID
-     = ' + CONVERT(varchar,@ID) else @WhereClause end
-    if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
-    SELECT @WhereClause = case @FirstName when isnull(@FirstName,'') then @WhereClause + ' 
-    FirstName = ' + CONVERT(varchar,@FirstName) else @WhereClause end
-    if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND '
-    SELECT @WhereClause = case @LastName when isnull(@LastName,'') then @WhereClause + ' 
-    LastName = ' + CONVERT(varchar,@LastName) else @WhereClause
-    end
+    if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @ID when isnull(@ID,'') then @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
+    if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @FirstName when isnull(@FirstName,'') then @WhereClause + ' FirstName = ' + CONVERT(varchar,@FirstName) else @WhereClause end
+    if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @LastName when isnull(@LastName,'') then @WhereClause + ' LastName = ' + CONVERT(varchar,@LastName) else @WhereClause  end
     exec(@WhereClause)
     GO
 
@@ -164,6 +157,7 @@ This file is where I keep my generated data access layer classes: When I call th
             End Try
         End Function
     End Class
+
 
     CREATE PROCEDURE prc_IU_tbl_Name
         @ID AS int = NULL, 
@@ -292,21 +286,12 @@ The dropdownlist on the page drp_targetTable is used to populate all the table n
     strSQL += "(INFORMATION_SCHEMA.TABLES.TABLE_NAME<>'dtproperties'))  "
 
     Dim oFuncs As New Funcs
-    oFuncs.LoadFromAnyDDLB(drp_targetTable, 
-    "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]", 
-    strSQL, 0, 
-    "TableName", 
-    "TableName")
+    oFuncs.LoadFromAnyDDLB(drp_targetTable, "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]", strSQL, 0, "TableName", "TableName")
     oFuncs = Nothing
 
 The results literal on the page called ltl_CodeResults will be the placeholder the main code generation function (MakeClassesAndIUs) will write to. Depending on what choices you make in the UI concerning what classes or stored procedures you want to generate the Switch variable is used to pass those choices to the main code generation function (MakeClassesAndIUs).
 
-    ltl_CodeResults.Text = MakeClassesAndIUs(TableName, 
-    ClassNameHere, 
-    StoredProcName, 
-    IU2Use, 
-    LoadStoredProcName, 
-    Switch)
+    ltl_CodeResults.Text = MakeClassesAndIUs(TableName, ClassNameHere, StoredProcName, IU2Use, LoadStoredProcName, Switch)
 
 ## 6. TestOutput
 
@@ -314,21 +299,21 @@ Here comes the fun part! Below I will show you examples of how to work with the 
 
 My first example will show how to call the business class's load() function which in turn will call our Dynamic Get stored procedure and retrieve whatever data we are looking for. I can pass a single or multiple values to the Dynamic stored procedure.
 
-    First I create a variable TestGet and point it at my Business Class
-    Next I'll use a With statement associated to TestGet
-    I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
-    I'll envoke the load function of our business class
-    Based on the criteria I've provided I'll call TestGet.ID and write out its value
-    Close my object 
+    1. First I create a variable TestGet and point it at my Business Class
+    2. Next I'll use a With statement associated to TestGet
+    3. I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
+    4. I'll envoke the load function of our business class
+    5. Based on the criteria I've provided I'll call TestGet.ID and write out its value
+    6. Close my object 
 
 I can also:
 
-    First I create a variable TestGet1 and point it at my Business Class
-    Next I'll use a With statement associated to TestGet1
-    I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
-    I'll envoke the load function of our business class
-    Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
-    Close my object 
+    1. First I create a variable TestGet1 and point it at my Business Class
+    2. Next I'll use a With statement associated to TestGet1
+    3. I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
+    4. I'll envoke the load function of our business class
+    5. Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
+    6. Close my object 
 
     Dim TestGet As New Classes.tbl_Name
     With TestGet
@@ -354,12 +339,12 @@ I can also:
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and insert a new record returning the inserted record ID.
 
-    First I create a variable TestSaveInsert and point it at my Business Class
-    Next I'll use a With statement associated to TestSaveInsert
-    I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-    I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-    Based on the criteria I've provided I'll call GenericID and write out its value
-    Close my object 
+    1. First I create a variable TestSaveInsert and point it at my Business Class
+    2. Next I'll use a With statement associated to TestSaveInsert
+    3. I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+    4. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+    5. Based on the criteria I've provided I'll call GenericID and write out its value
+    6. Close my object 
 
     Dim TestSaveInsert As New Classes.tbl_Name
     With TestSaveInsert
@@ -376,13 +361,13 @@ My next example will show how to call the business class's save() function which
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and update an exsisting record.
 
-    First I create a variable TestSaveUpdate and point it at my Business Class
-    Next I'll use a With statement associated to TestSaveUpdate
-    In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
-    I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-    I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-    Based on the criteria I've provided I'll call GenericID and write out its value
-    Close my object 
+    1. First I create a variable TestSaveUpdate and point it at my Business Class
+    2. Next I'll use a With statement associated to TestSaveUpdate
+    3. In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
+    4. I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+    5. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+    6. Based on the criteria I've provided I'll call GenericID and write out its value
+    7. Close my object 
 
     Dim TestSaveUpdate As New Classes.tbl_Name
     With TestSaveInsert
@@ -396,12 +381,12 @@ My next example will show how to call the business class's save() function which
 
 ## Points of Interest
 
-During this process I've noticed that almost 60% of my development time has been cut out because of using this tool! I hope this Code Generation Tool saves you time as well and gives you the opportunity to spend more time with your family.
+- During this process I've noticed that almost 60% of my development time has been cut out because of using this tool! I hope this Code Generation Tool saves you time as well and gives you the opportunity to spend more time with your family.
 History
 
-12/28/2006 - Finally finished this monster! (Or until the development community tears it apart and I have to start from scratch...)
+- 12/28/2006 - Finally finished this monster! (Or until the development community tears it apart and I have to start from scratch...)
 
-About Adam Kiger
+### About Adam Kiger
 
 I have been a full-cycle web developer/designer since 1996. I'm primarily working with companies interested in utilizing my Content Management Software(CMS) that I have spent the past 24 years developing which integrates a private labeling structure, B2C environments, multiple languages and a profound sense of SEO compliance. I have also built custom Blogging, Forums, web applications and custom webware for multiple clients.
 Adam D. Kiger
