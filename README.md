@@ -8,7 +8,7 @@
 ![CodeGen](images/codegen1.jpg)
 
 
-The Code Generation Tool will allow the user to point to any SQL Server 2000 Database and generate code on a per table basis or generate code on all the tables in that database. The code generated will consist of an Insert/Update stored procedure, a dynamic Get stored procedure, a Business Class with two functions(A save() function, allowing me to call the Insert/Update stored procedure the tool created and a load() function, allowing me to pass a single or multiple parameters to the Get stored procedure the tool created retrieving a recordset based on the criteria passed) and a Data Access Layer Class called by the save() function of the business class which in turn calls the Insert/Update stored procedure the tool created allowing me to insert if the record ID is not present or update based on the ID i have provided. If the information passed was intended for insertion, then the process will also return the new record ID.
+The Code Generation Tool will allow the user to point to any SQL Server 2000 Database and generate code on a per table basis or generate code on all the tables in that database. The code generated will consist of an Insert/Update stored procedure, a dynamic Get stored procedure, a Business Class with two functions(A save() function, allowing me to call the Insert/Update stored procedure the tool created and a load() function, allowing me to pass a single or multiple parameters to the Get stored procedure the tool created retrieving a recordset based on the criteria passed) and a Data Access Layer Class called by the save() function of the business class which in turn calls the Insert/Update stored procedure the tool created allowing me to insert if the record ID is not present or update based on the ID I have provided. If the information passed was intended for insertion, then the process will also return the new record ID.
 
 ## Using the code
 
@@ -22,7 +22,7 @@ Files that I will be talking about in this article and also included in this pro
 
 ## Set Up
 
-Before I begin it is important that you set up an example table in a SQL Server 2000 Database. You can use the script below or the DBSetup.sql provided in the CodeGeneration/CodeGeneration_src.zip or CodeGeneration/CodeGeneration_demo.zip downloads.
+Before I begin it is important that you set up an example table in a SQL Server 2000/2005/2008/2016/2019/2022 Database. You can use the script below...
 
     CREATE TABLE [dbo].[tbl_Name] (
         [ID] [int] IDENTITY (1, 1) NOT NULL ,
@@ -41,7 +41,7 @@ The Code Generation Tool works completely off your table(s) in your Database. Th
 
 1. Web.config
 
-Make sure in your web.config you add the following(it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000 Database and is application independent):
+Make sure in your web.config you add the following (it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000/2005/2008/2016/2019/2022 Database and is application independent):
 
     <appSettings add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
 
@@ -186,7 +186,7 @@ This file is where I keep my generated data access layer classes: When I call th
 
 ## 4. Funcs
 
-The function LoadFromAnyDDLB() below is referenced by the CodeGen application to create a dropdownlist of all the table names contained in the database you pointed the application at. I've used this function for many years to fill my dropdownlists. (Thanks John Galloway & Peter Pociask!)
+The function LoadFromAnyDDLB() below is referenced by the CodeGen application to create a dropdownlist of all the table names contained in the database you pointed the application at. I've used this function for many years to fill my dropdowns. 
 
 
     Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList, 
@@ -327,7 +327,7 @@ I can also:
     Response.Write("ID = " & TestGet.ID)
     TestGet = Nothing
 
-'********* OR ************'
+    '********* OR ************'
 
     Dim TestGet1 As New Classes.tbl_Name
     With TestGet1
