@@ -56,7 +56,7 @@ Make sure in your web.config you add the following (it's assumed that the databa
 
 This file is where I keep my generated business classes: This is where I will later call in an example the save() and the load() functions. Here is an example of the generated class and the generated dynamic Get stored procedure the load() function calls on:
 
-```asp.net
+```vb.net
 Public Class tbl_Name
     Public ID As String
     Public FirstName As String
