@@ -321,6 +321,7 @@ I can also:
 - Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
 - Close my object
 
+
     Dim TestGet As New Classes.tbl_Name
     With TestGet
         .FirstName = "'Adam'"
@@ -352,6 +353,7 @@ My next example will show how to call the business class's save() function which
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
 
+
     Dim TestSaveInsert As New Classes.tbl_Name
     With TestSaveInsert
         .FirstName = "mr. minx"
@@ -374,6 +376,7 @@ My next example will show how to call the business class's save() function which
 - I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
+
 
     Dim TestSaveUpdate As New Classes.tbl_Name
     With TestSaveUpdate
