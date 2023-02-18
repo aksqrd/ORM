@@ -133,43 +133,44 @@ GO
 
 This file is where I keep my generated data access layer classes: When I call the save() function in the generated business class, this class is called. Here is an example of the generated data access layer class and the generated Insert/Update stored procedure it references:
 
+```vb.net
+Public NotInheritable Class IU_tbl_Name
+    Public RetVal As String
+    Public ID As String
+    Public FirstName As String
+    Public LastName As String
+    Public Function ExecuteProc()
+        Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
+        Dim sqlCmd As New SqlClient.SqlCommand("[prc_IU_tbl_Name]", sqlConn)
+        Dim output_value As SqlParameter
+        With sqlCmd
+            .CommandType = CommandType.StoredProcedure
+            output_value = .Parameters.Add(New SqlClient.SqlParameter("@RetVal", SqlDbType.Int))
+            output_value.Direction = ParameterDirection.Output
+            .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.int)).Value = ID
+            .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.varchar, 50)).Value = FirstName
+            .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.varchar, 50)).Value = LastName
+        End With
+        Try
+            sqlCmd.Connection.Open()
+            sqlCmd.ExecuteReader()
+        Catch ex As System.Exception
+            Throw New System.Exception(ex.ToString())
+        Finally
+            If IsDBNull(output_value.Value) Then
+                RetVal = ID
+            Else
+                RetVal = output_value.Value
+            End If
+            If sqlConn.State = Data.ConnectionState.Open Then
+                sqlConn.Close()
+            End If
+        End Try
+    End Function
+End Class
+```
 
-    Public NotInheritable Class IU_tbl_Name
-        Public RetVal As String
-        Public ID As String
-        Public FirstName As String
-        Public LastName As String
-        Public Function ExecuteProc()
-            Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
-            Dim sqlCmd As New SqlClient.SqlCommand("[prc_IU_tbl_Name]", sqlConn)
-            Dim output_value As SqlParameter
-            With sqlCmd
-                .CommandType = CommandType.StoredProcedure
-                output_value = .Parameters.Add(New SqlClient.SqlParameter("@RetVal", SqlDbType.Int))
-                output_value.Direction = ParameterDirection.Output
-                .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.int)).Value = ID
-                .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.varchar, 50)).Value = FirstName
-                .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.varchar, 50)).Value = LastName
-            End With
-            Try
-                sqlCmd.Connection.Open()
-                sqlCmd.ExecuteReader()
-            Catch ex As System.Exception
-                Throw New System.Exception(ex.ToString())
-            Finally
-                If IsDBNull(output_value.Value) Then
-                    RetVal = ID
-                Else
-                    RetVal = output_value.Value
-                End If
-                If sqlConn.State = Data.ConnectionState.Open Then
-                    sqlConn.Close()
-                End If
-            End Try
-        End Function
-    End Class
-
-
+```tsql
     CREATE PROCEDURE prc_IU_tbl_Name
         @ID AS int = NULL, 
         @FirstName AS varchar(50) = NULL, 
@@ -192,14 +193,14 @@ This file is where I keep my generated data access layer classes: When I call th
         SET @RetVal = @@IDENTITY
     End
     GO
-
+```
 
 ## 4. Funcs
 
 The function LoadFromAnyDDLB() below is referenced by the CodeGen application to create a dropdownlist of all the table names contained in the database you pointed the application at. I've used this function for many years to fill my dropdowns. 
 
-
-    Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList, 
+```vb.net
+Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList, 
     ByVal AppConnectionString As String, 
     ByVal strSQL As String, 
     ByVal sDefault As String, 
@@ -257,7 +258,8 @@ The function LoadFromAnyDDLB() below is referenced by the CodeGen application to
         Return vddl
         sqlConn.Close()
         sqlConn.Dispose()
-    End Function
+End Function
+```
 
 ## 5. CodeGen
 
@@ -286,24 +288,30 @@ In the code behind of CodeGen.aspx I have preset the following variable values t
 
 I added this value so I wouldn't have to fully build the connection string everytime I ran the application.
 
-    txt_ConStr.Text = "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"
+```asp.net
+txt_ConStr.Text = "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"
+```
 
 The dropdownlist on the page drp_targetTable is used to populate all the table names in the database you have pointed the application at. This will allow you to select an individual table to generate code towards. The dropdownlist drp_targetTable is wrapped in a function called LoadFromAnyDDLB which is located in your Funcs.vb file above.
 
-    strSQL = "SELECT INFORMATION_SCHEMA.TABLES.TABLE_NAME AS TableName "
-    strSQL += "                FROM dbo.sysobjects INNER JOIN  "
-    strSQL += "INFORMATION_SCHEMA.TABLES ON dbo.sysobjects.name =  "
-    strSQL += "INFORMATION_SCHEMA.TABLES.TABLE_NAME  "
-    strSQL += "                WHERE ((TABLE_TYPE = 'BASE TABLE') AND  "
-    strSQL += "(INFORMATION_SCHEMA.TABLES.TABLE_NAME<>'dtproperties'))  "
+```vb.net
+strSQL = "SELECT INFORMATION_SCHEMA.TABLES.TABLE_NAME AS TableName "
+strSQL += "                FROM dbo.sysobjects INNER JOIN  "
+strSQL += "INFORMATION_SCHEMA.TABLES ON dbo.sysobjects.name =  "
+strSQL += "INFORMATION_SCHEMA.TABLES.TABLE_NAME  "
+strSQL += "                WHERE ((TABLE_TYPE = 'BASE TABLE') AND  "
+strSQL += "(INFORMATION_SCHEMA.TABLES.TABLE_NAME<>'dtproperties'))  "
 
-    Dim oFuncs As New Funcs
-    oFuncs.LoadFromAnyDDLB(drp_targetTable, "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]", strSQL, 0, "TableName", "TableName")
-    oFuncs = Nothing
+Dim oFuncs As New Funcs
+oFuncs.LoadFromAnyDDLB(drp_targetTable, "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]", strSQL, 0, "TableName", "TableName")
+oFuncs = Nothing
+```
 
 The results literal on the page called ltl_CodeResults will be the placeholder the main code generation function (MakeClassesAndIUs) will write to. Depending on what choices you make in the UI concerning what classes or stored procedures you want to generate the Switch variable is used to pass those choices to the main code generation function (MakeClassesAndIUs).
 
-    ltl_CodeResults.Text = MakeClassesAndIUs(TableName, ClassNameHere, StoredProcName, IU2Use, LoadStoredProcName, Switch)
+```asp.net
+ltl_CodeResults.Text = MakeClassesAndIUs(TableName, ClassNameHere, StoredProcName, IU2Use, LoadStoredProcName, Switch)
+```
 
 ## 6. TestOutput
 
@@ -327,27 +335,31 @@ I can also:
 - Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
 - Close my object
 
-    Dim TestGet As New Classes.tbl_Name
-    With TestGet
-        .FirstName = "'Adam'"
-        .LastName = "'Kiger'"
-        .load()
-    End With
+```vb.net
+Dim TestGet As New Classes.tbl_Name
+With TestGet
+    .FirstName = "'Adam'"
+    .LastName = "'Kiger'"
+    .load()
+End With
 
-    Response.Write("ID = " & TestGet.ID)
-    TestGet = Nothing
+Response.Write("ID = " & TestGet.ID)
+TestGet = Nothing
+```
 
+```vba
 '-------------------- OR ----------------------'
+```
+```vb.net
+Dim TestGet1 As New Classes.tbl_Name
+With TestGet1
+    .ID = 1
+    .load()
+End With
 
-    Dim TestGet1 As New Classes.tbl_Name
-    With TestGet1
-        .ID = 1
-        .load()
-    End With
-
-    Response.Write("LastName = " & TestGet1.LastName)
-    TestGet1 = Nothing
-
+Response.Write("LastName = " & TestGet1.LastName)
+TestGet1 = Nothing
+```
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and insert a new record returning the inserted record ID.
 
@@ -358,19 +370,20 @@ My next example will show how to call the business class's save() function which
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
 
-
-    Dim TestSaveInsert As New Classes.tbl_Name
-    With TestSaveInsert
-        .FirstName = "mr. minx"
-        .LastName = "kiger"
-        '.save() 'without retrieving an ID of the new inserted record
-    End With
+```vb.net
+Dim TestSaveInsert As New Classes.tbl_Name
+With TestSaveInsert
+    .FirstName = "mr. minx"
+    .LastName = "kiger"
+    '.save() 'without retrieving an ID of the new inserted record
+End With
     
-    'retrieving an ID of the new inserted record
-    Dim GenericID As String = TestSaveInsert.save()
-    Response.Write("NewID is = " & GenericID)
+'retrieving an ID of the new inserted record
+Dim GenericID As String = TestSaveInsert.save()
+Response.Write("NewID is = " & GenericID)
 
-    TestSaveInsert = Nothing
+TestSaveInsert = Nothing
+```
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and update an exsisting record.
 
@@ -382,16 +395,17 @@ My next example will show how to call the business class's save() function which
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
 
+```vb.net
+Dim TestSaveUpdate As New Classes.tbl_Name
+With TestSaveUpdate
+    .ID = 4
+    .FirstName = "Madison"
+    .LastName = "Kiger"
+    .save()
+End With
 
-    Dim TestSaveUpdate As New Classes.tbl_Name
-    With TestSaveUpdate
-        .ID = 4
-        .FirstName = "Madison"
-        .LastName = "Kiger"
-        .save()
-    End With
-
-    TestSaveUpdate = Nothing
+TestSaveUpdate = Nothing
+```
 
 ### Points of Interest
 
