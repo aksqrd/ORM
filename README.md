@@ -253,18 +253,18 @@ The function LoadFromAnyDDLB() below is referenced by the CodeGen application to
 
 The UI for the Code Generation Tool contains the following:
 
-    Generate All Tables? = checkbox to determine if I want to run the code generation on all tables in the DB or just run against one table at a time
-    Generate Stored Procs Only? = checkbox to determine if I just want to run code generated stored procedures only
-    Generate Business Classes Only? = checkbox to determine if I just want to run code generated business classes
-    Generate DAL Classes Only? = checkbox to determine if I just want to run code generated data access layer classes
-    DB Connection String = textbox to edit or add my database connection string
-    Target Table = dropdownlist to select an individual table to generate code against
-    Object Class Name = textbox to edit or add my business class name
-    IU Class Name = textbox to edit or add my data access layer class name
-    IU Sproc Name = textbox to edit or add my Insert/Update stored procedure name
-    Select Sproc Name = textbox to edit or add my Dynamic Get stored procedure name
-    Submit Button = run the application
-    Reset Button = resets the application 
+- Generate All Tables? = checkbox to determine if I want to run the code generation on all tables in the DB or just run against one table at a time
+- Generate Stored Procs Only? = checkbox to determine if I just want to run code generated stored procedures only
+- Generate Business Classes Only? = checkbox to determine if I just want to run code generated business classes
+- Generate DAL Classes Only? = checkbox to determine if I just want to run code generated data access layer classes
+- DB Connection String = textbox to edit or add my database connection string
+- Target Table = dropdownlist to select an individual table to generate code against
+- Object Class Name = textbox to edit or add my business class name
+- IU Class Name = textbox to edit or add my data access layer class name
+- IU Sproc Name = textbox to edit or add my Insert/Update stored procedure name
+- Select Sproc Name = textbox to edit or add my Dynamic Get stored procedure name
+- Submit Button = run the application
+- Reset Button = resets the application 
 
 In the code behind of CodeGen.aspx I have preset the following variable values to match my naming conventions. Of course you can edit these values to match your needs.
 
@@ -275,7 +275,8 @@ In the code behind of CodeGen.aspx I have preset the following variable values t
     LoadStoredProcName = "prc_Get_tbl_Name"
 
 I added this value so I wouldn't have to fully build the connection string everytime I ran the application.
-txt_ConStr.Text = "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"
+
+    txt_ConStr.Text = "server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"
 
 The dropdownlist on the page drp_targetTable is used to populate all the table names in the database you have pointed the application at. This will allow you to select an individual table to generate code towards. The dropdownlist drp_targetTable is wrapped in a function called LoadFromAnyDDLB which is located in your Funcs.vb file above.
 
