@@ -14,11 +14,11 @@ The Code Generation Tool will allow the user to point to any SQL Server 2000 Dat
 
 Files that I will be talking about in this article and also included in this project are:
 
-    - Web.config
-    - Classes.vb
-    - IU.vb
-    - Funcs.vb
-    - Default.aspx/Default.aspx.vb
+- Web.config
+- Classes.vb
+- IU.vb
+- Funcs.vb
+- Default.aspx/Default.aspx.vb
 
 ## Set Up
 
