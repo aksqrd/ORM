@@ -305,21 +305,21 @@ Here comes the fun part! Below I will show you examples of how to work with the 
 
 My first example will show how to call the business class's load() function which in turn will call our Dynamic Get stored procedure and retrieve whatever data we are looking for. I can pass a single or multiple values to the Dynamic stored procedure.
 
-1. First I create a variable TestGet and point it at my Business Class
-2. Next I'll use a With statement associated to TestGet
-3. I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
-4. I'll envoke the load function of our business class
-5. Based on the criteria I've provided I'll call TestGet.ID and write out its value
-6. Close my object 
+- First I create a variable TestGet and point it at my Business Class
+- Next I'll use a With statement associated to TestGet
+- I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
+- I'll envoke the load function of our business class
+- Based on the criteria I've provided I'll call TestGet.ID and write out its value
+- Close my object 
 
 I can also:
 
-1. First I create a variable TestGet1 and point it at my Business Class
-2. Next I'll use a With statement associated to TestGet1
-3. I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
-4. I'll envoke the load function of our business class
-5. Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
-6. Close my object 
+- First I create a variable TestGet1 and point it at my Business Class
+- Next I'll use a With statement associated to TestGet1
+- I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
+- I'll envoke the load function of our business class
+- Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
+- Close my object 
 
     Dim TestGet As New Classes.tbl_Name
     With TestGet
@@ -345,17 +345,17 @@ I can also:
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and insert a new record returning the inserted record ID.
 
-1. First I create a variable TestSaveInsert and point it at my Business Class
-2. Next I'll use a With statement associated to TestSaveInsert
-3. I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-4. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-5. Based on the criteria I've provided I'll call GenericID and write out its value
-6. Close my object 
+- First I create a variable TestSaveInsert and point it at my Business Class
+- Next I'll use a With statement associated to TestSaveInsert
+- I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+- I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+- Based on the criteria I've provided I'll call GenericID and write out its value
+- Close my object 
 
     Dim TestSaveInsert As New Classes.tbl_Name
     With TestSaveInsert
-        .FirstName = "Barbara"
-        .LastName = "Bush"
+        .FirstName = "mr. minx"
+        .LastName = "kiger"
         '.save() 'without retrieving an ID of the new inserted record
     End With
 
@@ -367,19 +367,19 @@ My next example will show how to call the business class's save() function which
 
 My next example will show how to call the business class's save() function which in turn will call our Data Access Layer Class which will then call our Insert/Update stored procedure and update an exsisting record.
 
-1. First I create a variable TestSaveUpdate and point it at my Business Class
-2. Next I'll use a With statement associated to TestSaveUpdate
-3. In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
-4. I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
-5. I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
-6. Based on the criteria I've provided I'll call GenericID and write out its value
-7. Close my object 
+- First I create a variable TestSaveUpdate and point it at my Business Class
+- Next I'll use a With statement associated to TestSaveUpdate
+- In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
+- I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+- I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
+- Based on the criteria I've provided I'll call GenericID and write out its value
+- Close my object 
 
     Dim TestSaveUpdate As New Classes.tbl_Name
-    With TestSaveInsert
+    With TestSaveUpdate
         .ID = 4
-        .FirstName = "George"
-        .LastName = "Bush"
+        .FirstName = "Madison"
+        .LastName = "Kiger"
         .save()
     End With
 
