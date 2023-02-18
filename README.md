@@ -33,13 +33,17 @@ Before I begin it is important that you set up an example table in a SQL Server 
 
     SET IDENTITY_INSERT [dbo].[tbl_Name] ON
     INSERT tbl_Name(ID,FirstName,LastName) VALUES('1','adam','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('2','george','bush')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','donald','trump')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','hillary','clinton')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('2','annie','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','zoe','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','madison','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('5','codi','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('6','hannah','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('7','nona','kiger')
+    INSERT tbl_Name(ID,FirstName,LastName) VALUES('8','monty','kiger')
 
 The Code Generation Tool works completely off your table(s) in your Database. This was a critical and important feature for me because by running the generation off the column names per table I was able to keep variable naming consistancy all the way through to the front-end of my application.
 
-1. Web.config
+## 1. Web.config
 
 Make sure in your web.config you add the following (it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000/2005/2008/2016/2019/2022 Database and is application independent):
 
@@ -268,11 +272,11 @@ The UI for the Code Generation Tool contains the following:
 
 In the code behind of CodeGen.aspx I have preset the following variable values to match my naming conventions. Of course you can edit these values to match your needs.
 
-    TableName = "dbo.tbl_Name"
-    ClassNameHere = "tbl_Name"
-    StoredProcName = "prc_IU_tbl_Name"
-    IU2Use = "IU_tbl_Name"
-    LoadStoredProcName = "prc_Get_tbl_Name"
+- TableName = "dbo.tbl_Name"
+- ClassNameHere = "tbl_Name"
+- StoredProcName = "prc_IU_tbl_Name"
+- IU2Use = "IU_tbl_Name"
+- LoadStoredProcName = "prc_Get_tbl_Name"
 
 I added this value so I wouldn't have to fully build the connection string everytime I ran the application.
 
