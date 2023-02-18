@@ -24,22 +24,24 @@ Files that I will be talking about in this article and also included in this pro
 
 Before I begin it is important that you set up an example table in a SQL Server 2000/2005/2008/2016/2019/2022 Database. You can use the script below...
 
-    CREATE TABLE [dbo].[tbl_Name] (
-        [ID] [int] IDENTITY (1, 1) NOT NULL ,
-        [FirstName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-        [LastName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
-        ) ON [PRIMARY]
-    GO
+```tsql
+CREATE TABLE [dbo].[tbl_Name] (
+    [ID] [int] IDENTITY (1, 1) NOT NULL ,
+    [FirstName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+    [LastName] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+    ) ON [PRIMARY]
+GO
 
-    SET IDENTITY_INSERT [dbo].[tbl_Name] ON
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('1','adam','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('2','annie','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','zoe','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','madison','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('5','codi','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('6','hannah','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('7','nona','kiger')
-    INSERT tbl_Name(ID,FirstName,LastName) VALUES('8','monty','kiger')
+SET IDENTITY_INSERT [dbo].[tbl_Name] ON
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('1','adam','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('2','annie','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','zoe','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','madison','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('5','codi','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('6','hannah','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('7','nona','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('8','monty','kiger')
+```
 
 The Code Generation Tool works completely off your table(s) in your Database. This was a critical and important feature for me because by running the generation off the column names per table I was able to keep variable naming consistancy all the way through to the front-end of my application.
 
@@ -47,81 +49,85 @@ The Code Generation Tool works completely off your table(s) in your Database. Th
 
 Make sure in your web.config you add the following (it's assumed that the database your application is using will be the same as what you are generating code for. This tool will allow you to point at any SQL Server 2000/2005/2008/2016/2019/2022 Database and is application independent):
 
-    <appSettings add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
-
+```asp.net
+<appSettings add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
+```
 ## 2. Classes
 
 This file is where I keep my generated business classes: This is where I will later call in an example the save() and the load() functions. Here is an example of the generated class and the generated dynamic Get stored procedure the load() function calls on:
 
+```asp.net
+Public Class tbl_Name
+    Public ID As String
+    Public FirstName As String
+    Public LastName As String
 
-    Public Class tbl_Name
-        Public ID As String
-        Public FirstName As String
-        Public LastName As String
+    Public Function save() As Integer
+        Dim output As Integer
+        Dim generic As New IU_Database.IU_tbl_Name
+        With generic
+            .ID = ID
+            .FirstName = FirstName
+            .LastName = LastName
+        End With
+        generic.ExecuteProc()
+        output = generic.RetVal
+        Return output
+        generic = Nothing
+    End Function
 
-        Public Function save() As Integer
-            Dim output As Integer
-            Dim generic As New IU_Database.IU_tbl_Name
-            With generic
-                .ID = ID
-                .FirstName = FirstName
-                .LastName = LastName
-            End With
-            generic.ExecuteProc()
-            output = generic.RetVal
-            Return output
-            generic = Nothing
-        End Function
-
-        Public Function load()
-            Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
-            Dim sqlCmd As New SqlClient.SqlCommand("[prc_Get_tbl_Name]", sqlConn)
-            With sqlCmd
-                .CommandType = CommandType.StoredProcedure
-                .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.Int)).Value = ID
-                .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.VarChar, 50)).Value = FirstName
-                .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.VarChar, 50)).Value = LastName
-            End With
-            Dim DataReader As SqlDataReader
-            Try
-                sqlCmd.Connection.Open()
-                DataReader = sqlCmd.ExecuteReader()
-                Do While DataReader.Read()
-                    If Not IsDBNull(DataReader.Item("ID")) Then
-                        ID = DataReader.Item("ID")
-                    End If
-                    If Not IsDBNull(DataReader.Item("FirstName")) Then
-                        FirstName = DataReader.Item("FirstName")
-                    End If
-                    If Not IsDBNull(DataReader.Item("LastName")) Then
-                        LastName = DataReader.Item("LastName")
-                    End If
-                Loop
-            Catch ex As System.Exception
-                Throw New System.Exception(ex.ToString())
-            Finally
-                If sqlConn.State = Data.ConnectionState.Open Then
-                    sqlConn.Close()
+    Public Function load()
+        Dim sqlConn As New SqlConnection(ConfigurationSettings.AppSettings("AppConnectionString"))
+        Dim sqlCmd As New SqlClient.SqlCommand("[prc_Get_tbl_Name]", sqlConn)
+        With sqlCmd
+            .CommandType = CommandType.StoredProcedure
+            .Parameters.Add(New SqlClient.SqlParameter("@ID", SqlDbType.Int)).Value = ID
+            .Parameters.Add(New SqlClient.SqlParameter("@FirstName", SqlDbType.VarChar, 50)).Value = FirstName
+            .Parameters.Add(New SqlClient.SqlParameter("@LastName", SqlDbType.VarChar, 50)).Value = LastName
+        End With
+        Dim DataReader As SqlDataReader
+        Try
+            sqlCmd.Connection.Open()
+            DataReader = sqlCmd.ExecuteReader()
+            Do While DataReader.Read()
+                If Not IsDBNull(DataReader.Item("ID")) Then
+                    ID = DataReader.Item("ID")
                 End If
-            End Try
-        End Function
+                If Not IsDBNull(DataReader.Item("FirstName")) Then
+                    FirstName = DataReader.Item("FirstName")
+                End If
+                If Not IsDBNull(DataReader.Item("LastName")) Then
+                    LastName = DataReader.Item("LastName")
+                End If
+            Loop
+        Catch ex As System.Exception
+            Throw New System.Exception(ex.ToString())
+        Finally
+            If sqlConn.State = Data.ConnectionState.Open Then
+                sqlConn.Close()
+            End If
+        End Try
+    End Function
 
-    End Class
+End Class
+```
 
 I'm sure at some point someone is going to cut this stored procedure down to size, but I have yet to run into a resource problem, even with over 50,000 concurrent sessions.
 
-    CREATE PROCEDURE prc_Get_tbl_Name
-    @ID AS int = NULL, 
-    @FirstName AS varchar(50) = NULL, 
-    @LastName AS varchar(50) = NULL 
-    AS
-    Declare @WhereClause as varchar(8000)
-    SELECT @WhereClause = 'SELECT * FROM tbl_Name WHERE 1 = 1 '
-    if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @ID when isnull(@ID,'') then @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
-    if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @FirstName when isnull(@FirstName,'') then @WhereClause + ' FirstName = ' + CONVERT(varchar,@FirstName) else @WhereClause end
-    if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @LastName when isnull(@LastName,'') then @WhereClause + ' LastName = ' + CONVERT(varchar,@LastName) else @WhereClause  end
-    exec(@WhereClause)
-    GO
+```tsql
+CREATE PROCEDURE prc_Get_tbl_Name
+@ID AS int = NULL, 
+@FirstName AS varchar(50) = NULL, 
+@LastName AS varchar(50) = NULL 
+AS
+Declare @WhereClause as varchar(8000)
+SELECT @WhereClause = 'SELECT * FROM tbl_Name WHERE 1 = 1 '
+if DataLength(@ID) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @ID when isnull(@ID,'') then @WhereClause + ' ID = ' + CONVERT(varchar,@ID) else @WhereClause end
+if DataLength(@FirstName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @FirstName when isnull(@FirstName,'') then @WhereClause + ' FirstName = ' + CONVERT(varchar,@FirstName) else @WhereClause end
+if DataLength(@LastName) > 0 SELECT @WhereClause = @WhereClause + ' AND ' SELECT @WhereClause = case @LastName when isnull(@LastName,'') then @WhereClause + ' LastName = ' + CONVERT(varchar,@LastName) else @WhereClause  end
+exec(@WhereClause)
+GO
+```
 
 ## 3. IU
 
@@ -321,7 +327,6 @@ I can also:
 - Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
 - Close my object
 
-
     Dim TestGet As New Classes.tbl_Name
     With TestGet
         .FirstName = "'Adam'"
@@ -398,7 +403,7 @@ My next example will show how to call the business class's save() function which
 
 ### About Adam Kiger
 
-I have been a full-cycle web developer/designer since 1996. I'm primarily working with companies interested in utilizing my Content Management Software(CMS) that I have spent the past 24 years developing which integrates a private labeling structure, B2C environments, multiple languages and a profound sense of SEO compliance. I have also built custom Blogging, Forums, web applications and custom webware for multiple clients.
+I have been a full-cycle web developer/designer since 1996. I'm primarily working with companies interested in utilizing my Content Management Software (CMX) that I have spent the past 24 years developing which integrates a private labeling structure, B2C environments, multiple languages and a profound sense of SEO compliance. I have also built custom Blogging, Forums, web applications and custom webware for multiple clients.
 
 
 	
