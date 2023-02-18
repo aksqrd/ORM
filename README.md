@@ -319,7 +319,7 @@ I can also:
 - I'll assign ID a value of 1 (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar)
 - I'll envoke the load function of our business class
 - Based on the criteria I've provided I'll call TestGet1.LastName and write out its value
-- Close my object 
+- Close my object
 
     Dim TestGet As New Classes.tbl_Name
     With TestGet
@@ -331,7 +331,7 @@ I can also:
     Response.Write("ID = " & TestGet.ID)
     TestGet = Nothing
 
-    '********* OR ************'
+'-------------------- OR ----------------------'
 
     Dim TestGet1 As New Classes.tbl_Name
     With TestGet1
@@ -350,7 +350,7 @@ My next example will show how to call the business class's save() function which
 - I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
 - I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
 - Based on the criteria I've provided I'll call GenericID and write out its value
-- Close my object 
+- Close my object
 
     Dim TestSaveInsert As New Classes.tbl_Name
     With TestSaveInsert
@@ -358,7 +358,7 @@ My next example will show how to call the business class's save() function which
         .LastName = "kiger"
         '.save() 'without retrieving an ID of the new inserted record
     End With
-
+    
     'retrieving an ID of the new inserted record
     Dim GenericID As String = TestSaveInsert.save()
     Response.Write("NewID is = " & GenericID)
@@ -373,7 +373,7 @@ My next example will show how to call the business class's save() function which
 - I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
 - I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
 - Based on the criteria I've provided I'll call GenericID and write out its value
-- Close my object 
+- Close my object
 
     Dim TestSaveUpdate As New Classes.tbl_Name
     With TestSaveUpdate
