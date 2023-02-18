@@ -3,7 +3,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-    <title>CodeGen</title>
+    <title>ORM</title>
     <meta name="GENERATOR" content="Microsoft Visual Studio .NET 7.1">
     <meta name="CODE_LANGUAGE" content="Visual Basic .NET 7.1">
     <meta name="vs_defaultClientScript" content="JavaScript">
