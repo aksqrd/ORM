@@ -71,7 +71,8 @@ Public Class _Default
             strSQL += "                WHERE ((TABLE_TYPE = 'BASE TABLE') AND  "
             strSQL += "(INFORMATION_SCHEMA.TABLES.TABLE_NAME<>'dtproperties'))   ORDER BY TableName ASC  "
 
-            LoadFromAnyDDLB(drp_targetTable, ConfigurationManager.AppSettings("" & AppConnectString & ""), strSQL, 0, "TableName", "TableName")
+            Dim oFuncs As New Funcs
+            oFuncs.LoadFromAnyDDLB(drp_targetTable, ConfigurationManager.AppSettings("" & AppConnectString & ""), strSQL, 0, "TableName", "TableName")
 
         End If
 
@@ -92,7 +93,8 @@ Public Class _Default
             chk_All.Checked = False
         End If
 
-        LoadFromAnyDDLB(drp_targetTable, txt_ConStr.Text, strSQL, 0, "TableName", "TableName")
+        Dim oFuncs As New Funcs
+        oFuncs.LoadFromAnyDDLB(drp_targetTable, txt_ConStr.Text, strSQL, 0, "TableName", "TableName")
 
         txt_ObjClassName.Text = ""
         txt_IUSprocName.Text = ""
@@ -256,7 +258,8 @@ Public Class _Default
                             txt_AppConnectionString.Text = ""
                             txt_CSharpAppConnectionString.Text = ""
 
-                            LoadFromAnyDDLB(drp_targetTable, txt_ConStr.Text, strSQL, 0, "TableName", "TableName")
+                            Dim oFuncs As New Funcs
+                            oFuncs.LoadFromAnyDDLB(drp_targetTable, txt_ConStr.Text, strSQL, 0, "TableName", "TableName")
 
                         Catch ex As System.Exception
                             Throw New System.Exception(ex.ToString())
@@ -2067,62 +2070,5 @@ Public Class _Default
         End Try
     End Function
 
-    Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList, ByVal AppConnectionString As String, ByVal strSQL As String, ByVal sDefault As String, ByVal sValue As String, ByVal sText As String)
-        'vddl = DropDownListBox Ojbect
-        'sqlCmd = pre-built sql to fill listbox
-        'sDefault = Value of item selected by default
-        'sValue = Column from result set used for the value field in listbox
-        'sText = Column from result set used for the display field in listbox
-
-        Dim sqlCmd As New SqlCommand
-        Dim sqlConn As New SqlConnection
-
-        sqlConn.ConnectionString = AppConnectionString
-        sqlCmd = New SqlClient.SqlCommand(strSQL, sqlConn)
-        sqlCmd.Connection.Open()
-
-
-        Dim dReader As SqlDataReader
-        dReader = sqlCmd.ExecuteReader
-
-        Dim defaultItem As New System.Web.UI.WebControls.ListItem
-        defaultItem.Value = ""
-        defaultItem.Text = "Select"
-
-        With vddl
-            .DataSource = dReader
-            .DataValueField = sValue
-            .DataTextField = sText
-
-            If sText = "calDate" Then
-                .DataTextFormatString = "{0:d}"
-            End If
-            If sText = "intervalDesc" Then
-                .DataTextFormatString = "{0:t}"
-            End If
-            .DataBind()
-            .Items.Insert(0, defaultItem)
-            CType(.DataSource, SqlDataReader).Close()
-            If .Items.Count = 0 Then
-                .BackColor = System.Drawing.Color.LightGray
-                .Enabled = False
-            End If
-
-            Dim x As Integer
-            For x = 1 To (.Items.Count - 1)
-                If .Items(x).Value = sDefault Then
-                    .Items(x).Selected = True
-                End If
-            Next
-
-        End With
-
-        If sqlConn.State = Data.ConnectionState.Open Then
-            sqlConn.Close()
-            sqlConn.Dispose()
-        End If
-        Return vddl
-
-    End Function
 
 End Class
