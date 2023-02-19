@@ -36,7 +36,7 @@ GO
 SET IDENTITY_INSERT [dbo].[tbl_Name] ON
 INSERT tbl_Name(ID,FirstName,LastName) VALUES('1','adam','kiger')
 INSERT tbl_Name(ID,FirstName,LastName) VALUES('2','annie','kiger')
-INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','zoe','kiger')
+INSERT tbl_Name(ID,FirstName,LastName) VALUES('3','aspen','kiger')
 INSERT tbl_Name(ID,FirstName,LastName) VALUES('4','madison','kiger')
 INSERT tbl_Name(ID,FirstName,LastName) VALUES('5','codi','kiger')
 INSERT tbl_Name(ID,FirstName,LastName) VALUES('6','hannah','kiger')
