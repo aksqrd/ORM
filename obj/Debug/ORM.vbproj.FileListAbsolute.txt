@@ -93,4 +93,3 @@ C:\Users\Administrator\Documents\GitHub\ORM\obj\Debug\ORM.vbproj.CopyComplete
 C:\Users\Administrator\Documents\GitHub\ORM\obj\Debug\ORM.dll
 C:\Users\Administrator\Documents\GitHub\ORM\obj\Debug\WebForms_Basic.xml
 C:\Users\Administrator\Documents\GitHub\ORM\obj\Debug\ORM.pdb
-C:\Users\Administrator\Documents\GitHub\ORM\obj\Debug\ORM.vbproj.AssemblyReference.cache

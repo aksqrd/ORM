@@ -2,13 +2,13 @@
 
 ## Introduction
 
-20 years ago I began writing a tool to generate business classes, data access layer classes, insert/update/get stored procedures. I got so tired of writing the same code over and over again. As a developer I can personally tell you that this is a common complaint among developers. Through the years I stuck to what worked easily and quickly since as a developer I'm constantly surrounded by impossible deadlines and the need for the reuse of successfully tested functionality which is crucial. As time passed I realized a similarity in the business classes, data access layer classes, insert/update/get stored procedures I was writing. As soon as portions of code in these categories passed various and rigorous testing from my wonderful friends in Quality & Assurance, I took the code and began looking for a way to speed up my development process.
+20 years ago I began writing a tool to generate business classes, data access layer classes, insert/update/get stored procedures. I got so tired of writing the same code over and over again. As a developer, I can personally tell you that this is a common complaint among developers. Through the years I stuck to what worked easily and quickly since as a developer I'm constantly surrounded by impossible deadlines and the need for the reuse of successfully tested functionality which is crucial. As time passed I realized a similarity in the business classes, data access layer classes, insert/update/get stored procedures I was writing. As soon as portions of code in these categories passed various and rigorous testing from my wonderful friends in Quality & Assurance, I took the code and began looking for a way to speed up my development process.
 
 
 ![CodeGen](images/codegen1.jpg)
 
 
-The Code Generation Tool will allow the user to point to any SQL Server 2000 Database and generate code on a per table basis or generate code on all the tables in that database. The code generated will consist of an Insert/Update stored procedure, a dynamic Get stored procedure, a Business Class with two functions(A save() function, allowing me to call the Insert/Update stored procedure the tool created and a load() function, allowing me to pass a single or multiple parameters to the Get stored procedure the tool created retrieving a recordset based on the criteria passed) and a Data Access Layer Class called by the save() function of the business class which in turn calls the Insert/Update stored procedure the tool created allowing me to insert if the record ID is not present or update based on the ID I have provided. If the information passed was intended for insertion, then the process will also return the new record ID.
+The Code Generation Tool will allow the user to point to any SQL Server 2000/2005/2008/2016/2019/2022 Database and generate code on a per table basis or generate code on all the tables in that database. The code generated will consist of an Insert/Update stored procedure, a dynamic Get stored procedure, a count procedure, a Business Class with three methods (A count() function that allows me to perform record counts, a save() function, allowing me to call the Insert/Update stored procedure the tool created and a load() function, allowing me to pass a single or multiple parameters to the Get stored procedure the tool created retrieving a recordset based on the criteria passed) and a Data Access Layer Class called by the save() function of the business class which in turn calls the Insert/Update stored procedure the tool created allowing me to insert if the record ID is not present or update based on the ID I have provided. If the information passed was intended for insertion, then the process will also return the new record ID.
 
 ## Using the code
 
@@ -53,6 +53,7 @@ Make sure in your web.config you add the following (it's assumed that the databa
 ```asp.net
 <appSettings add key="AppConnectionString" value="server=[server name];database=[Database Name];user id=[User ID];pwd=[Password]"></appSettings>
 ```
+
 ## 2. Classes
 
 This file is where I keep my generated business classes: This is where I will later call in an example the save() and the load() functions. Here is an example of the generated class and the generated dynamic Get stored procedure the load() function calls on:
@@ -126,6 +127,7 @@ Public Class tbl_Name
                      End If
                 End If
             Loop
+
         Catch ex As System.Exception
             Throw New System.Exception(ex.ToString())
         Finally
@@ -135,9 +137,7 @@ Public Class tbl_Name
         End Try
     End Function
 
-
 End Class 
-
 ```
 
 I'm sure at some point someone is going to cut this stored procedure down to size, but I have yet to run into a resource problem, even with over 50,000 concurrent sessions.
@@ -172,7 +172,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
-
 ```
 
 ## 3. IU
@@ -181,10 +180,12 @@ This file is where I keep my generated data access layer classes: When I call th
 
 ```vb.net
 Public NotInheritable Class IU_tbl_Name 
+
     Public RetVal As String
     Public ID As String 
     Public FirstName As String 
     Public LastName As String 
+
     Public Function ExecuteProc() 
 	    Dim sqlConn As New SqlConnection(ConfigurationManager.AppSettings("AppConnectionString")) 
 	    Dim sqlCmd As New SqlClient.SqlCommand("[dbo].[prc_IU_tbl_Name]", sqlConn) 
@@ -213,9 +214,8 @@ Public NotInheritable Class IU_tbl_Name
 	        End If 
         End Try 
     End Function 
+
 End Class
-
-
 ```
 
 ```tsql
@@ -259,7 +259,7 @@ GO
 
 ## 4. Count
 
-This file is where I keep my generated counting class: When I call the save() function in the generated business class, this class is called. Here is an example of the generated data access layer class and the generated Insert/Update stored procedure it references:
+This file is where I keep my generated counting class: When I call the count() function in the generated business class, this class is called. Here is an example of the generated counting class and the generated Counting stored procedure it references:
 
 ```vb.net
 Public NotInheritable Class Count_tbl_Name 
@@ -282,6 +282,7 @@ Public NotInheritable Class Count_tbl_Name
         Try 
 	        sqlCmd.Connection.Open() 
 	        DataReader = sqlCmd.ExecuteReader() 
+
             Do While DataReader.Read()
                 If Not IsDBNull(DataReader.Item("ReturnCount")) Then
                     RetVal = DataReader.Item("ReturnCount")
@@ -289,6 +290,7 @@ Public NotInheritable Class Count_tbl_Name
                     RetVal = 0
                 End If
             Loop
+
         Catch ex As System.Exception 
 	        Throw New System.Exception(ex.ToString()) 
         Finally 
@@ -297,6 +299,7 @@ Public NotInheritable Class Count_tbl_Name
 	        End If 
         End Try 
     End Function 
+
 End Class 
 ```
 
@@ -343,6 +346,7 @@ Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList,
     ByVal sDefault As String, 
     ByVal sValue As String, 
     ByVal sText As String)
+
         'vddl = DropDownListBox Ojbect
         'AppConnectionString = connection string to my DB
         'strSQL = pre-built sql to fill listbox
@@ -356,7 +360,6 @@ Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList,
         sqlConn.ConnectionString = AppConnectionString
         sqlCmd = New SqlClient.SqlCommand(strSQL, sqlConn)
         sqlCmd.Connection.Open()
-
 
         Dim dReader As SqlDataReader
         dReader = sqlCmd.ExecuteReader
@@ -378,6 +381,7 @@ Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList,
             .DataBind()
             .Items.Insert(0, defaultItem)
             CType(.DataSource, SqlDataReader).Close()
+
             If .Items.Count = 0 Then
                 .BackColor = System.Drawing.Color.LightGray
                 .Enabled = False
@@ -395,6 +399,7 @@ Public Function LoadFromAnyDDLB(ByVal vddl As DropDownList,
         Return vddl
         sqlConn.Close()
         sqlConn.Dispose()
+
 End Function
 ```
 
@@ -402,6 +407,9 @@ End Function
 
 The UI for the Code Generation Tool contains the following:
 
+- Target Database? = dropdown to select which database I wish to work with. Cycles through all connectionstring values offered in the web.config
+- Generate for APIs? = checkbox to determine if I want recordset data brought back in JSON format
+- Generate for C#? = checkbox to determine if I want code generated in C#
 - Generate All Tables? = checkbox to determine if I want to run the code generation on all tables in the DB or just run against one table at a time
 - Generate Stored Procs Only? = checkbox to determine if I just want to run code generated stored procedures only
 - Generate Business Classes Only? = checkbox to determine if I just want to run code generated business classes
@@ -415,13 +423,14 @@ The UI for the Code Generation Tool contains the following:
 - Submit Button = run the application
 - Reset Button = resets the application 
 
-In the code behind of CodeGen.aspx I have preset the following variable values to match my naming conventions. Of course you can edit these values to match your needs.
+In the code behind of Default.aspx I have preset the following variable values to match my naming conventions. Of course you can edit these values to match your needs.
 
 - TableName = "dbo.tbl_Name"
 - ClassNameHere = "tbl_Name"
 - StoredProcName = "prc_IU_tbl_Name"
 - IU2Use = "IU_tbl_Name"
 - LoadStoredProcName = "prc_Get_tbl_Name"
+- CountStoredPrcName = "prc_Count_tbl_Name"
 
 I added this value so I wouldn't have to fully build the connection string everytime I ran the application.
 
@@ -458,7 +467,7 @@ My first example will show how to call the business class's load() function whic
 
 - First I create a variable TestGet and point it at my Business Class
 - Next I'll use a With statement associated to TestGet
-- I'll assign FirstName a value of "'Adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
+- I'll assign FirstName a value of "'adam'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
 - I'll envoke the load function of our business class
 - Based on the criteria I've provided I'll call TestGet.ID and write out its value
 - Close my object 
@@ -475,8 +484,8 @@ I can also:
 ```vb.net
 Dim TestGet As New Classes.tbl_Name
 With TestGet
-    .FirstName = "'Adam'"
-    .LastName = "'Kiger'"
+    .FirstName = "'adam'"
+    .LastName = "'kiger'"
     .load()
 End With
 
@@ -503,7 +512,7 @@ My next example will show how to call the business class's save() function which
 
 - First I create a variable TestSaveInsert and point it at my Business Class
 - Next I'll use a With statement associated to TestSaveInsert
-- I'll assign FirstName a value of "'Barbara'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+- I'll assign FirstName a value of "'mr. minx'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'kiger'"
 - I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
@@ -528,7 +537,7 @@ My next example will show how to call the business class's save() function which
 - First I create a variable TestSaveUpdate and point it at my Business Class
 - Next I'll use a With statement associated to TestSaveUpdate
 - In order to update a record you must pass a value to the ID variable in your table. I'll assign ID a value of 4
-- I'll assign FirstName a value of "'George'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Bush'"
+- I'll assign FirstName a value of "'Madison'" (making sure to include single quotes for my stored procedure if the variable I'm assigning a value to is a varchar) and LastName a value of "'Kiger'"
 - I'll envoke the save function of our business class by assigning it to a GenericID variable(if I didn't need the inserted record ID I would just envoke the save function in the With statment)
 - Based on the criteria I've provided I'll call GenericID and write out its value
 - Close my object
