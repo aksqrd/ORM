@@ -1,6 +1,6 @@
 # ORM
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/aksqrd/orm?label=orm%20release&style=for-the-badge) ![Website](https://img.shields.io/website?down_color=red&down_message=offline&label=DEMO%20WEBSITE&style=for-the-badge&up_color=green&up_message=online&url=http%3A%2F%2Fwww.aksqrd.com)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/aksqrd/orm?label=orm%20release&style=for-the-badge) ![Website](https://img.shields.io/website?down_color=red&down_message=offline&label=DEMO%20WEBSITE&style=for-the-badge&up_color=green&up_message=online&url=http%3A%2F%2Fwww.aksqrd.com) ![GitHub last commit](https://img.shields.io/github/last-commit/aksqrd/orm?style=for-the-badge)
 
 ## Introduction
 
