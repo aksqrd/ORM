@@ -2,6 +2,7 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aksqrd/orm?label=orm%20release&style=for-the-badge) ![Website](https://img.shields.io/website?down_color=red&down_message=offline&label=DEMO%20WEBSITE&style=for-the-badge&up_color=green&up_message=online&url=http%3A%2F%2Fwww.aksqrd.com) ![GitHub last commit](https://img.shields.io/github/last-commit/aksqrd/orm?style=for-the-badge)
 
+
 ## Introduction
 
 20 years ago I began writing a tool to generate business classes, data access layer classes, insert/update/get stored procedures. I got so tired of writing the same code over and over again. As a developer, I can personally tell you that this is a common complaint among developers. Through the years I stuck to what worked easily and quickly since as a developer I'm constantly surrounded by impossible deadlines and the need for the reuse of successfully tested functionality which is crucial. As time passed I realized a similarity in the business classes, data access layer classes, insert/update/get stored procedures I was writing. As soon as portions of code in these categories passed various and rigorous testing from my wonderful friends in Quality & Assurance, I took the code and began looking for a way to speed up my development process.
