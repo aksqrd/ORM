@@ -23,7 +23,18 @@
             BORDER-BOTTOM: 1px solid;
             BACKGROUND-COLOR: #c0c0c0
         }
-    </style>
+
+			pre {
+				white-space: pre-wrap;
+			}
+			pre code {
+			  background-color: #eee;
+			  border: 1px solid #999;
+			  display: block;
+			  padding: 20px;
+			}
+
+		</style>
 </head>
 <body>
     <form id="Form1" method="post" runat="server">
@@ -176,8 +187,8 @@
         <h2>Results
 				<hr align="left" width="900">
         </h2>
-        <pre>
-				<asp:literal id="ltl_CodeResults" runat="server"></asp:literal></pre>
+        <pre><code>
+				<asp:literal id="ltl_CodeResults" runat="server"></asp:literal></code></pre>
         <hr align="left" width="900">
         </asp:panel>
     </form>
